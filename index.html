@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operaciones con Polinomios</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #f8fafc);
+      color: #111827;
+    }
+    header {
+      background: #1d4ed8;
+      color: white;
+      padding: 22px 14px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    header p {
+      margin: 8px 0 0;
+      font-size: 17px;
+    }
+    main {
+      max-width: 850px;
+      margin: auto;
+      padding: 14px;
+    }
+    section {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      margin: 16px 0;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+    h2 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-top: 0;
+    }
+    p, li {
+      font-size: 18px;
+      line-height: 1.5;
+    }
+    .botonera {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    button {
+      width: 100%;
+      min-height: 58px;
+      font-size: 18px;
+      font-weight: bold;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active {
+      transform: scale(0.98);
+      background: #1e40af;
+    }
+    button:disabled {
+      opacity: 1;
+      cursor: default;
+    }
+    .gris { background: #374151; }
+    .verde { background: #16a34a !important; }
+    .rojo { background: #dc2626 !important; }
+    .amarillo {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      border-radius: 14px;
+      padding: 12px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 18px;
+    }
+    .pregunta {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin: 16px 0;
+      color: #111827;
+    }
+    .resultado {
+      min-height: 40px;
+      margin-top: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .oculto { display: none; }
+    .insignia {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #075985;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: bold;
+      margin: 4px;
+    }
+    .progreso {
+      height: 18px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .barra {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: width .3s;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 15px;
+      color: #374151;
+    }
+    @media (min-width: 720px) {
+      .botonera {
+        grid-template-columns: 1fr 1fr;
+      }
+      .botonera button:nth-child(3) {
+        grid-column: span 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Operaciones con Polinomios</h1>
+    <p>Suma, resta y multiplicación</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Objetivo</h2>
+      <p>
+        Practicar operaciones con polinomios mediante preguntas interactivas.
+        Tocá la opción correcta y revisá la explicación.
+      </p>
+      <button onclick="probar()">Probar botones</button>
+      <div id="prueba" class="resultado"></div>
+    </section>
+
+    <section>
+      <h2>Recordatorio</h2>
+      <ul>
+        <li><b>Suma:</b> se agrupan términos semejantes.</li>
+        <li><b>Resta:</b> se cambia el signo del segundo polinomio y luego se suma.</li>
+        <li><b>Multiplicación:</b> se aplica la propiedad distributiva.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="amarillo">
+        Pregunta <span id="numeroPregunta">1</span> de <span id="cantidadPreguntas">20</span><br>
+        Puntaje: <span id="puntaje">0</span>
+      </div>
+
+      <div class="progreso">
+        <div id="barra" class="barra"></div>
+      </div>
+
+      <div id="juego"></div>
+    </section>
+
+    <section>
+      <h2>Insignias</h2>
+      <div id="insignias">
+        <span class="insignia">Completá la actividad para ganar insignias</span>
+      </div>
+    </section>
+
+    <section>
+      <button class="gris" onclick="reiniciar()">Reiniciar actividad</button>
+    </section>
+  </main>
+
+  <footer>
+    Recurso educativo interactivo para ciclo básico de nivel secundario.
+  </footer>
+
+  <script>
+    var preguntas = [
+      {tema:"Suma", texto:"(3x + 2) + (5x + 4) = ?", opciones:["8x + 6","15x + 8","2x + 2"], correcta:0, exp:"3x + 5x = 8x y 2 + 4 = 6."},
+      {tema:"Suma", texto:"(4x² + 3x) + (2x² + 5x) = ?", opciones:["6x² + 8x","8x² + 15x","6x² - 2x"], correcta:0, exp:"Se suman los términos semejantes."},
+      {tema:"Suma", texto:"(x² + 2x + 1) + (3x² + x + 5) = ?", opciones:["4x² + 3x + 6","3x² + 3x + 6","4x² + x + 6"], correcta:0, exp:"x² + 3x² = 4x²; 2x + x = 3x; 1 + 5 = 6."},
+      {tema:"Suma", texto:"(6a + 7) + (2a - 3) = ?", opciones:["8a + 4","4a + 10","8a - 10"], correcta:0, exp:"6a + 2a = 8a y 7 - 3 = 4."},
+      {tema:"Suma", texto:"(2x² - 4x + 8) + (x² + 6x - 3) = ?", opciones:["3x² + 2x + 5","3x² - 10x + 11","2x² + 2x + 5"], correcta:0, exp:"2x²+x²=3x²; -4x+6x=2x; 8-3=5."},
+
+      {tema:"Resta", texto:"(7x + 9) - (2x + 3) = ?", opciones:["5x + 6","9x + 12","5x + 12"], correcta:0, exp:"Se cambia el signo del segundo polinomio."},
+      {tema:"Resta", texto:"(6x² + 4x - 1) - (2x² + x - 5) = ?", opciones:["4x² + 3x + 4","4x² + 5x - 6","8x² + 3x + 4"], correcta:0, exp:"Restar -5 equivale a sumar 5."},
+      {tema:"Resta", texto:"(9a - 2) - (4a + 6) = ?", opciones:["5a - 8","13a + 4","5a + 4"], correcta:0, exp:"9a - 4a = 5a y -2 - 6 = -8."},
+      {tema:"Resta", texto:"(5x² + 2x + 7) - (x² + 8x + 1) = ?", opciones:["4x² - 6x + 6","4x² + 10x + 8","6x² - 6x + 6"], correcta:0, exp:"5x²-x²=4x²; 2x-8x=-6x; 7-1=6."},
+      {tema:"Resta", texto:"(3m² - m + 10) - (m² - 5m + 4) = ?", opciones:["2m² + 4m + 6","2m² - 6m + 14","4m² + 4m + 6"], correcta:0, exp:"-m - (-5m) = 4m."},
+
+      {tema:"Multiplicación", texto:"3x(2x + 5) = ?", opciones:["6x² + 15x","5x² + 8x","6x + 15"], correcta:0, exp:"3x multiplica a cada término del paréntesis."},
+      {tema:"Multiplicación", texto:"2a(a + 4) = ?", opciones:["2a² + 8a","2a² + 4","3a + 8"], correcta:0, exp:"2a·a = 2a² y 2a·4 = 8a."},
+      {tema:"Multiplicación", texto:"(x + 2)(x + 3) = ?", opciones:["x² + 5x + 6","x² + 6","2x + 5"], correcta:0, exp:"x·x + x·3 + 2·x + 2·3."},
+      {tema:"Multiplicación", texto:"(x + 4)(x - 1) = ?", opciones:["x² + 3x - 4","x² + 5x - 4","x² - 3x - 4"], correcta:0, exp:"x² - x + 4x - 4 = x² + 3x - 4."},
+      {tema:"Multiplicación", texto:"(2x + 1)(x + 5) = ?", opciones:["2x² + 11x + 5","2x² + 10x + 5","2x² + 6x + 5"], correcta:0, exp:"2x² + 10x + x + 5 = 2x² + 11x + 5."},
+
+      {tema:"Mixto", texto:"(2x + 3) + (x - 7) = ?", opciones:["3x - 4","x - 4","3x + 10"], correcta:0, exp:"2x+x=3x; 3-7=-4."},
+      {tema:"Mixto", texto:"(10x - 6) - (3x - 2) = ?", opciones:["7x - 4","7x - 8","13x - 4"], correcta:0, exp:"10x - 6 - 3x + 2 = 7x - 4."},
+      {tema:"Mixto", texto:"4x(x - 2) = ?", opciones:["4x² - 8x","4x² - 2","4x - 8"], correcta:0, exp:"4x·x = 4x² y 4x·(-2) = -8x."},
+      {tema:"Mixto", texto:"(x - 3)(x + 3) = ?", opciones:["x² - 9","x² + 9","x² + 6x + 9"], correcta:0, exp:"Es una diferencia de cuadrados."},
+      {tema:"Mixto", texto:"(5x² + x) + (2x² - 4x) = ?", opciones:["7x² - 3x","7x² + 5x","3x² - 3x"], correcta:0, exp:"5x²+2x²=7x²; x-4x=-3x."}
+    ];
+
+    var actual = 0;
+    var puntaje = 0;
+    var respondio = false;
+
+    document.getElementById("cantidadPreguntas").innerHTML = preguntas.length;
+
+    function probar() {
+      document.getElementById("prueba").innerHTML = "✅ Los botones funcionan correctamente.";
+    }
+
+    function mostrar() {
+      respondio = false;
+      var p = preguntas[actual];
+
+      document.getElementById("numeroPregunta").innerHTML = actual + 1;
+      document.getElementById("puntaje").innerHTML = puntaje;
+      document.getElementById("barra").style.width = ((actual) / preguntas.length * 100) + "%";
+
+      var html = "";
+      html += "<h2>" + p.tema + "</h2>";
+      html += "<div class='pregunta'>" + p.texto + "</div>";
+      html += "<div class='botonera'>";
+      for (var i = 0; i < p.opciones.length; i++) {
+        html += "<button id='op" + i + "' onclick='responder(" + i + ")'>" + p.opciones[i] + "</button>";
+      }
+      html += "</div>";
+      html += "<div id='resultado' class='resultado'></div>";
+      html += "<button id='siguiente' class='gris oculto' onclick='siguiente()'>Siguiente</button>";
+
+      document.getElementById("juego").innerHTML = html;
+    }
+
+    function responder(opcion) {
+      if (respondio) return;
+      respondio = true;
+
+      var p = preguntas[actual];
+
+      for (var i = 0; i < p.opciones.length; i++) {
+        document.getElementById("op" + i).disabled = true;
+      }
+
+      if (opcion === p.correcta) {
+        puntaje++;
+        document.getElementById("op" + opcion).className = "verde";
+        document.getElementById("resultado").innerHTML = "✅ Correcto. " + p.exp;
+      } else {
+        document.getElementById("op" + opcion).className = "rojo";
+        document.getElementById("op" + p.correcta).className = "verde";
+        document.getElementById("resultado").innerHTML = "❌ Incorrecto. " + p.exp;
+      }
+
+      document.getElementById("puntaje").innerHTML = puntaje;
+      document.getElementById("siguiente").className = "gris";
+    }
+
+    function siguiente() {
+      actual++;
+      if (actual >= preguntas.length) {
+        finalizar();
+      } else {
+        mostrar();
+      }
+    }
+
+    function finalizar() {
+      document.getElementById("barra").style.width = "100%";
+      var mensaje = "";
+      var insignias = "";
+
+      if (puntaje >= 18) {
+        mensaje = "Excelente trabajo. Dominás muy bien las operaciones con polinomios.";
+        insignias = "<span class='insignia'>🏆 Experto en polinomios</span><span class='insignia'>⭐ Precisión máxima</span>";
+      } else if (puntaje >= 12) {
+        mensaje = "Muy bien. Tenés una buena base, seguí practicando.";
+        insignias = "<span class='insignia'>👏 Buen desempeño</span><span class='insignia'>📘 Practicante avanzado</span>";
+      } else {
+        mensaje = "Necesitás repasar un poco más. Volvé a intentarlo.";
+        insignias = "<span class='insignia'>💪 En entrenamiento</span>";
+      }
+
+      document.getElementById("juego").innerHTML =
+        "<h2>Actividad finalizada</h2>" +
+        "<div class='pregunta'>Puntaje final: " + puntaje + " de " + preguntas.length + "</div>" +
+        "<p style='text-align:center; font-size:19px;'>" + mensaje + "</p>";
+
+      document.getElementById("insignias").innerHTML = insignias;
+    }
+
+    function reiniciar() {
+      actual = 0;
+      puntaje = 0;
+      document.getElementById("insignias").innerHTML = "<span class='insignia'>Completá la actividad para ganar insignias</span>";
+      document.getElementById("prueba").innerHTML = "";
+      mostrar();
+    }
+
+    mostrar();
+  </script>
+</body>
+</html>
